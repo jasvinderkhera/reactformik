@@ -1,8 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { getEmployeeData, DeleteData, UpdateData, createData } from "./API/Allcomponents";
+import {
+  getEmployeeData,
+  DeleteData,
+  UpdateData,
+  createData,
+} from "./API/Allcomponents";
 import { useFormik } from "formik";
-import {Schemas} from './schemas/Schemas'
+import { Schemas } from "./schemas/Schemas";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -26,16 +31,20 @@ function Formik() {
 
   const getData = async () => {
     const res = await getEmployeeData();
-    if (res === undefined) {
-      toast.error(res.message);
-    } else if (res.status === 200) {
+
+    if (res.isSuccess) {
+      console.log(res.data)
       setTable_data(res.data);
+      
+    } else {
+      toast.error(res.errMsg);
     }
   };
 
   const CreateEntry = async (form_data) => {
     const res = await createData(form_data);
-    if (res.status === 200) {
+    // console.log(res)
+    if (res.status === 201) {
       toast.success("User created successfully");
     }
     return res;
@@ -79,12 +88,12 @@ function Formik() {
 
   return (
     <div>
-      <form class="mx-auto" style={{width:"300px"}}>
+      <form class="mx-auto" style={{ width: "300px" }}>
         <div class="form-group pb-2">
           <label>
             Name
             <input
-            class="form-control"
+              class="form-control"
               type="text"
               id="name"
               name="name"
@@ -96,11 +105,11 @@ function Formik() {
           </label>
           {errors.name && touched.name ? <p>{errors.name}</p> : null}
         </div>
-        <div class='pb-2'>
+        <div class="pb-2">
           <label>
             Position
             <input
-            class="form-control"
+              class="form-control"
               type="text"
               id="position"
               name="position"
@@ -114,11 +123,11 @@ function Formik() {
             <p>{errors.position}</p>
           ) : null}
         </div>
-        <div class='pb-2'>
+        <div class="pb-2">
           <label>
             Department
             <input
-            class="form-control"
+              class="form-control"
               type="text"
               id="department"
               name="department"
@@ -132,11 +141,11 @@ function Formik() {
             <p>{errors.department}</p>
           ) : null}
         </div>
-        <div class='pb-2'>
+        <div class="pb-2">
           <label>
             Salary
             <input
-            class="form-control"
+              class="form-control"
               type="number"
               id="salary"
               name="salary"
@@ -148,11 +157,11 @@ function Formik() {
           </label>
           {errors.salary && touched.salary ? <p>{errors.salary}</p> : null}
         </div>
-        <div class='pb-2'>
+        <div class="pb-2">
           <label>
             Hiredate
             <input
-             class="form-control"
+              class="form-control"
               type="date"
               id="hiredate"
               name="hiredate"
@@ -166,8 +175,12 @@ function Formik() {
             <p>{errors.hiredate}</p>
           ) : null}
         </div>
-        <div class='pb-4'>
-          <button className="btn btn-primary" type="button" onClick={handleSubmit}>
+        <div class="pb-4">
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={handleSubmit}
+          >
             Submit Data
           </button>
         </div>
@@ -184,7 +197,7 @@ function Formik() {
             <th>Actions</th>
           </tr>
 
-          {table_data.map((item) => {
+          { !!table_data.length && table_data.map((item) => {
             return (
               <tr>
                 <td>{item.id}</td>
@@ -194,7 +207,8 @@ function Formik() {
                 <td>{item.salary}</td>
                 <td>{item.hiredate}</td>
                 <td>
-                  <button className="btn btn-danger"
+                  <button
+                    className="btn btn-danger"
                     onClick={() => {
                       DeleteEntry(item.id);
                     }}
@@ -202,7 +216,8 @@ function Formik() {
                     Delete
                   </button>
                   &nbsp;
-                  <button className="btn btn-info"
+                  <button
+                    className="btn btn-info"
                     onClick={() => {
                       setForm_data(item);
                     }}
